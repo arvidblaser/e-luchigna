@@ -1,0 +1,20 @@
+{
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.6.1}",
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.6.1}",
+    "nrf-connect.applications": [
+        "${workspaceFolder}\\gwen-production"
+    ],
+    "nrf-connect.boardRoots": [
+        "c:\\git\\jiva-board\\"
+    ],
+    "files.associations": {
+        "log.h": "c",
+        "sensor.h": "c",
+        "sht4x.h": "c",
+        "bluetooth.h": "c",
+        "util.h": "c",
+        "hci.h": "c",
+        "devicetree.h": "c",
+        "adc.h": "c"
+    }
+}
