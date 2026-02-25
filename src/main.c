@@ -15,6 +15,7 @@
 #include <zephyr/drivers/sensor/sht4x.h>
 #include <zephyr/drivers/sensor.h>
 #include <stdio.h>
+#include "screen.h"
 
 LOG_MODULE_REGISTER(my_logger, LOG_LEVEL_DBG);
 
@@ -240,6 +241,7 @@ void main(void)
         hum_as_uint = (uint16_t)(sensor_value_to_double(&hum) * 10);
 
         uart_transmit_log("Temp/Hum read: Temp=%d, Hum=%d\r\n", temp_as_int, hum_as_uint);
+        updateScreen(temp_as_int/10);
 
         /* ---------- BLE advertise ---------- */
         ble_advertise(temp_as_int, hum_as_uint);
