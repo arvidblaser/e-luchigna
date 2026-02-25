@@ -1,0 +1,180 @@
+/ {
+	zephyr,user {
+		io-channels = <&adc 0>;
+	};
+
+    chosen {
+		zephyr,console = &uart0;
+    };
+
+
+	gpo{
+        compatible = "gpio-leds";
+
+        led0: led_0 {
+			gpios= <&gpio0 7 GPIO_ACTIVE_HIGH>; // GPIO_ACTIVE_LOW in blinky example
+			label= "Debug led P0.07";
+		};
+		tmpon: tmp_on {
+			gpios= <&gpio0 8 GPIO_ACTIVE_HIGH>; 
+			label= "I2C enable pin";
+		};
+
+		display_11: display_11{
+			gpios= <&gpio0 21 GPIO_ACTIVE_HIGH>;
+			label= "Display1 1 (C)";
+		};
+		display_12: display_12{
+			gpios= <&gpio0 20 GPIO_ACTIVE_HIGH>;
+			label= "Display1 2 (B)";
+		};
+		display_13: display_13{
+			gpios= <&gpio0 19 GPIO_ACTIVE_HIGH>;
+			label= "Display1 3 (A)";
+		};
+		display_14: display_14{
+			gpios= <&gpio0 17 GPIO_ACTIVE_HIGH>;
+			label= "Display1 4 (D)";
+		};
+		display_15: display_15{
+			gpios= <&gpio0 16 GPIO_ACTIVE_HIGH>;
+			label= "Display1 5 (COM)";
+		};
+		display_16: display_16{
+			gpios= <&gpio0 15 GPIO_ACTIVE_HIGH>;
+			label= "Display1 6 (F)";
+		};
+		display_17: display_17{
+			gpios= <&gpio0 14 GPIO_ACTIVE_HIGH>;
+			label= "Display1 7 (G)";
+		};
+		display_18: display_18{
+			gpios= <&gpio0 13 GPIO_ACTIVE_HIGH>;
+			label= "Display1 8 (E)";
+		};
+		display_21: display_21{
+			gpios= <&gpio0 3 GPIO_ACTIVE_HIGH>;
+			label= "Display2 1 (C)";
+		};
+		display_22: display_22{
+			gpios= <&gpio0 31 GPIO_ACTIVE_HIGH>;
+			label= "Display2 2 (B)";
+		};
+		display_23: display_23{
+			gpios= <&gpio0 30 GPIO_ACTIVE_HIGH>;
+			label= "Display2 3 (A)";
+		};
+		display_24: display_24{
+			gpios= <&gpio0 29 GPIO_ACTIVE_HIGH>;
+			label= "Display2 4 (D)";
+		};
+		display_25: display_25{
+			gpios= <&gpio0 28 GPIO_ACTIVE_HIGH>;
+			label= "Display2 5 (COM)";
+		};
+		display_26: display_26{
+			gpios= <&gpio0 27 GPIO_ACTIVE_HIGH>;
+			label= "Display2 6 (F)";
+		};
+		display_27: display_27{
+			gpios= <&gpio0 26 GPIO_ACTIVE_HIGH>;
+			label= "Display2 7 (G)";
+		};
+		display_28: display_28{
+			gpios= <&gpio0 25 GPIO_ACTIVE_HIGH>;
+			label= "Display2 8 (E)";
+		};
+
+    };
+
+	gpi{
+		compatible = "gpio-keys";
+		button0: button_0 {
+			gpios = < &gpio0 2 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button switch 0";
+		};
+	};
+};
+
+
+
+&gpio0 {
+    status  = "okay";
+};
+
+&gpiote {
+    status = "okay";
+};
+
+
+&i2c0 {
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&uart0 {
+    status = "okay";
+    current-speed = < 0x1c200 >;
+    pinctrl-0 = < &uart0_default >;
+    pinctrl-1 = < &uart0_sleep >;
+    pinctrl-names = "default", "sleep";
+};
+
+&pinctrl {    
+	status = "okay";
+    i2c0_default: i2c0_default {
+		group1 {
+			psels = <NRF_PSEL(TWIM_SDA, 0, 10)>,
+					<NRF_PSEL(TWIM_SCL, 0, 9)>;
+		};
+	};
+
+	i2c0_sleep: i2c0_sleep {
+		group1 {
+			psels = <NRF_PSEL(TWIM_SDA, 0, 10)>,
+					<NRF_PSEL(TWIM_SCL, 0, 9)>;
+			low-power-enable;
+		};
+	};
+
+	uart0_default: uart0_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 23)>;
+				//<NRF_PSEL(UART_RX, 0, xx)>,
+				//<NRF_PSEL(UART_RTS, 0, xx)>,
+				//<NRF_PSEL(UART_CTS, 0, xx)>;
+		};
+	};
+
+	uart0_sleep: uart0_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 23)>;
+				//<NRF_PSEL(UART_RX, 0, xx)>,
+				//<NRF_PSEL(UART_RTS, 0, xx)>,
+				//<NRF_PSEL(UART_CTS, 0, xx)>;
+			low-power-enable;
+		};
+	};
+};
+
+&adc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN3>;
+		zephyr,resolution = <10>;
+		zephyr,oversampling = <0>;
+	};
+    status = "okay";
+};
+
+
+
+
+
+

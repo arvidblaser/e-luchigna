@@ -1,9 +1,9 @@
 #include <zephyr/ztest.h>
 #include "screen.h"
 
-// build test first time: west build -d build/tests -b native_posix tests/screen
-// next time: west build -d build/tests.
-// run test: west build -t run
+// build test first time: west build -d build/tests -b native_sim/native/64 tests/screen
+// next times: west build -d build/tests.
+// run test: west build -d build/tests -t run
 
 ZTEST(screen_tests, test_extract_digits_23) {
     uint8_t digit_tens, digit_units;

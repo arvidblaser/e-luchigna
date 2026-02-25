@@ -1,21 +1,58 @@
 #include "screen.h"
 
-// delaytimerefresh
-//delaytime turn on
 
-//pins to turn on array
-//pins to turn off array
-//pinns to refresh array
-// activePins
 
-//function turnON(pinstoTurnon)
-//function turnff(pinstoTurnoff)
+#define REFRESH_TIME 100
+#define TURN_ON_TIME 1500
+#define TURN_OFF_TIME 1500
 
-//enum displaytype 1, 2
 
-typedef uint8_t seg7_pattern_t;
+//#define DISPLAY_11 DT_NODELABEL(display_11)
+//static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_NODELABEL(led0), gpios);
 
-enum {
+
+//static const struct gpio_dt_spec display_channels[] = { 
+//		GPIO_DT_SPEC_GET(DT_NODELABEL(display_11), gpios),
+//	};
+// tens syftar på tiotals-siffran
+// units syftar på entals-siffran
+
+    // 0b0GFEDCBA
+enum pin_segment_tens {
+    DISPLAY_11_T = 0b00000100, // C
+    DISPLAY_12_T = 0b00000010, // B
+    DISPLAY_13_T = 0b00000001, // A
+    DISPLAY_14_T = 0b00001000, // D
+    // DISPLAY_15_T COM not a segment
+    DISPLAY_16_T = 0b00010000, // F
+    DISPLAY_17_T = 0b00100100, // G
+    DISPLAY_18_T = 0b01000100, // E
+};
+
+enum pin_segment_units {
+    DISPLAY_21_T = 0b00000100, // C
+    DISPLAY_22_T = 0b00000010, // B
+    DISPLAY_23_T = 0b00000001, // A
+    DISPLAY_24_T = 0b00001000, // D
+    // DISPLAY_25_T COM not a segment
+    DISPLAY_26_T = 0b00010000, // F
+    DISPLAY_27_T = 0b00100100, // G
+    DISPLAY_28_T = 0b01000100, // E
+};
+
+static const uint8_t dummy_hardware_tens[] = {
+    0,1,2,3,4,5,6};
+
+static const uint8_t dummy_hardware_units[] = {
+    0,1,2,3,4,5,6};
+
+//consider chaning to abc...
+static const uint8_t pin_map_tens[] = {
+    DISPLAY_21_T, DISPLAY_22_T, DISPLAY_23_T, DISPLAY_24_T, DISPLAY_26_T, DISPLAY_27_T, DISPLAY_28_T
+};
+
+
+enum digit_segments {
     SEG7_ZERO  = 0b00111111, // 0
     SEG7_ONE   = 0b00000110, // 1
     SEG7_TWO   = 0b01011011, // 2
@@ -44,9 +81,13 @@ static const seg7_pattern_t hex_map[] = {
 };
 
 
-seg7_pattern_t current_tens; // tens syftar på tiotals-siffran
-seg7_pattern_t current_units; // units syftar på entals-siffran
+seg7_pattern_t current_tens; 
+seg7_pattern_t current_units; 
 
+
+void k_msleep(int sleeptime) {
+    //dummy function before zpehyr is setup properly
+}
 
 /**
  * @brief Get segment pattern for a hex nibble (0-15)
@@ -59,6 +100,13 @@ seg7_pattern_t get_segment_data(uint8_t nibble) {
 }
 
 
+/**
+ * @brief Extract tens and units digits from a number.
+ *
+ * @param number The input number (0-99).
+ * @param digit_tens Pointer to store the tens digit.
+ * @param digit_units Pointer to store the units digit.
+ */
 void extract_digits(uint8_t number, uint8_t *digit_tens, uint8_t *digit_units) {
     if (number > 99) {
         *digit_tens = 0;
@@ -84,7 +132,7 @@ seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new) {
 void updateScreen(int temp){
     uint8_t digit_tens;
     uint8_t digit_units;
-    extract_digits(temp,digit_tens,digit_units);
+    extract_digits(temp, &digit_tens, &digit_units);
     seg7_pattern_t display_tens = get_segment_data(digit_tens);
     seg7_pattern_t display_units = get_segment_data(digit_units);
 
@@ -96,5 +144,58 @@ void updateScreen(int temp){
     seg7_pattern_t turn_on_units = bitsToTurnOn(current_units, display_units);
     seg7_pattern_t turn_off_units = bitsToTurnOff(current_units, display_units);
 
+
+    turnOffPins(dummy_hardware_tens, turn_off_tens);
+    turnOffPins(dummy_hardware_units, turn_off_units);
+
+    turnOnPins(dummy_hardware_tens, turn_on_tens);
+    turnOnPins(dummy_hardware_units, turn_on_units);
+    k_msleep(TURN_ON_TIME);
+    disconnectPins(dummy_hardware_tens,turn_on_tens);
+    disconnectPins(dummy_hardware_units,turn_on_units);
+     //Turning off takes some additional time than turning on. Working withe timers /interrupts might be better soloution
+    k_msleep(TURN_OFF_TIME);
+    disconnectPins(dummy_hardware_tens,turn_off_tens);
+    disconnectPins(dummy_hardware_units,turn_off_units);
+    
+
+    refreshPins(dummy_hardware_tens, refresh_tens);
+    refreshPins(dummy_hardware_units, refresh_units);
+    k_msleep(REFRESH_TIME);
+    disconnectPins(dummy_hardware_tens,refresh_tens);
+    disconnectPins(dummy_hardware_units,refresh_units);
+
+}
+
+void refreshPins(const uint8_t *hardware_pins, seg7_pattern_t refresh_pins){
+    for(int i=0; i<7;i++){
+        if(pin_map_tens[i] & refresh_pins){
+            // turnOn hardware_pins[i];
+        }
+    }
+}
+
+void turnOffPins(const uint8_t *hardware_pins, seg7_pattern_t turn_off_pins){
+    for(int i=0; i<7;i++){
+        if(pin_map_tens[i] & turn_off_pins){
+            // turnOff hardware_pins[i];
+        }
+    }
+}
+
+void turnOnPins(const uint8_t *hardware_pins, seg7_pattern_t turn_on_pins){
+    for(int i=0; i<7;i++){
+        if(pin_map_tens[i] & turn_on_pins){
+            // turnON hardware_pins[i];
+        }
+    }
+}
+
+void disconnectPins(const uint8_t *hardware_pins, seg7_pattern_t filter ){
+    for(int i=0; i<7;i++){
+         if(pin_map_tens[i] & filter){
+            //disconnectPins
+         }
+    }
 }
 
