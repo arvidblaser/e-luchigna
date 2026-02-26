@@ -6,6 +6,7 @@
 #define TURN_ON_TIME 1500
 #define TURN_OFF_TIME 1500
 
+LOG_MODULE_REGISTER(screen_logger, LOG_LEVEL_DBG);
 
 //#define DISPLAY_11 DT_NODELABEL(display_11)
 //static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_NODELABEL(led0), gpios);

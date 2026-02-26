@@ -23,9 +23,9 @@ seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new);
 
 void updateScreen(int temp);
 
-void refreshPins(const uint8_t *hardware_pins, seg7_pattern_t refresh_pins);
-void turnOffPins(const uint8_t *hardware_pins, seg7_pattern_t turn_off_pins);
-void turnOnPins(const uint8_t *hardware_pins, seg7_pattern_t turn_on_pins);
-void disconnectPins(const uint8_t *hardware_pins, seg7_pattern_t filter);
+void refreshPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t refresh_pins);
+void turnOffPins(const struct gpio_dt_spec  *hardware_pins, seg7_pattern_t turn_off_pins);
+void turnOnPins(const struct gpio_dt_spec  *hardware_pins, seg7_pattern_t turn_on_pins);
+void disconnectPins(const struct gpio_dt_spec  *hardware_pins, seg7_pattern_t filter);
 
 #endif /* SCREEN_H */
