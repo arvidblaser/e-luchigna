@@ -30,7 +30,7 @@ static const struct gpio_dt_spec display_channels_units[] = {
         GPIO_DT_SPEC_GET(DT_NODELABEL(display_12), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_13), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_14), gpios),
-		//GPIO_DT_SPEC_GET(DT_NODELABEL(display_15), gpios), // proably want to exclude com port
+		//GPIO_DT_SPEC_GET(DT_NODELABEL(display_15), gpios), // exclude com port
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_16), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_17), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_18), gpios),
@@ -41,7 +41,7 @@ static const struct gpio_dt_spec display_channels_tens[] = {
         GPIO_DT_SPEC_GET(DT_NODELABEL(display_22), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_23), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_24), gpios),
-		//GPIO_DT_SPEC_GET(DT_NODELABEL(display_25), gpios), // proably want to exclude com port
+		//GPIO_DT_SPEC_GET(DT_NODELABEL(display_25), gpios), // exclude com port
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_26), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_27), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_28), gpios),
@@ -50,32 +50,20 @@ static const struct gpio_dt_spec display_channels_tens[] = {
 
 
     // 0b0GFEDCBA
-enum pin_segment_tens {
-    DISPLAY_11_T = 0b00000100, // C
-    DISPLAY_12_T = 0b00000010, // B
-    DISPLAY_13_T = 0b00000001, // A
-    DISPLAY_14_T = 0b00001000, // D
-    // DISPLAY_15_T COM not a segment
-    DISPLAY_16_T = 0b00010000, // F
-    DISPLAY_17_T = 0b00100100, // G
-    DISPLAY_18_T = 0b01000100, // E
-};
-
-enum pin_segment_units {
-    DISPLAY_21_T = 0b00000100, // C
-    DISPLAY_22_T = 0b00000010, // B
-    DISPLAY_23_T = 0b00000001, // A
-    DISPLAY_24_T = 0b00001000, // D
-    // DISPLAY_25_T COM not a segment
-    DISPLAY_26_T = 0b00010000, // F
-    DISPLAY_27_T = 0b00100100, // G
-    DISPLAY_28_T = 0b01000100, // E
+enum pin_segments {
+    SEGMENT_C = 0b00000100, // C
+    SEGMENT_B = 0b00000010, // B
+    SEGMENT_A = 0b00000001, // A
+    SEGMENT_D = 0b00001000, // D
+    SEGMENT_F = 0b00010000, // F
+    SEGMENT_G = 0b00100100, // G
+    SEGMENT_E = 0b01000100, // E
 };
 
 
-//consider chaning to abc...
-static const uint8_t pin_map_tens[] = {
-    DISPLAY_21_T, DISPLAY_22_T, DISPLAY_23_T, DISPLAY_24_T, DISPLAY_26_T, DISPLAY_27_T, DISPLAY_28_T
+// matches order of gpios
+static const uint8_t segment_map[] = {
+    SEGMENT_C, SEGMENT_B, SEGMENT_A, SEGMENT_D, SEGMENT_F, SEGMENT_G, SEGMENT_E
 };
 
 
@@ -152,9 +140,6 @@ seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new) {
     return current & ~new;
 }
 
-//	off_on = ((old_state ^ new_state) & new_state);
-//	on_on = (old_state & new_state);
-//	on_off = ((old_state ^ new_state) & old_state);
 #if HARDWARE_CONNECTED
 void updateScreen(int temp){
     uint8_t digit_tens;
@@ -180,7 +165,7 @@ void updateScreen(int temp){
     k_msleep(TURN_ON_TIME);
     disconnectPins(display_channels_tens,turn_on_tens);
     disconnectPins(display_channels_units,turn_on_units);
-     //Turning off takes some additional time than turning on. Working with timers /interrupts might be better soloution
+     //Turning off takes some additional time than turning on. Working with timers/interrupts might be better solution
     k_msleep(TURN_OFF_TIME);
     disconnectPins(display_channels_tens,turn_off_tens);
     disconnectPins(display_channels_units,turn_off_units);
@@ -210,7 +195,7 @@ void initScreenPins(){
 
 void refreshPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t refresh_pins){
     for(int i=0; i<6;i++){
-        if(pin_map_tens[i] & refresh_pins){
+        if(segment_map[i] & refresh_pins){
 			gpio_pin_configure_dt(&hardware_pins[i], GPIO_OUTPUT_ACTIVE);
         }
     }
@@ -218,7 +203,7 @@ void refreshPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t refres
 
 void turnOffPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t turn_off_pins){
     for(int i=0; i<6;i++){
-        if(pin_map_tens[i] & turn_off_pins){
+        if(segment_map[i] & turn_off_pins){
 			gpio_pin_configure_dt(&hardware_pins[i], GPIO_OUTPUT_INACTIVE);
         }
     }
@@ -226,7 +211,7 @@ void turnOffPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t turn_o
 
 void turnOnPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t turn_on_pins){
     for(int i=0; i<6;i++){
-        if(pin_map_tens[i] & turn_on_pins){
+        if(segment_map[i] & turn_on_pins){
 			gpio_pin_configure_dt(&hardware_pins[i], GPIO_OUTPUT_ACTIVE);
         }
     }
@@ -234,7 +219,7 @@ void turnOnPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t turn_on
 
 void disconnectPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t filter ){
     for(int i=0; i<6;i++){
-         if(pin_map_tens[i] & filter){
+         if(segment_map[i] & filter){
 			gpio_pin_configure_dt(&hardware_pins[i], GPIO_DISCONNECTED);
          }
     }
