@@ -241,7 +241,7 @@ void main(void)
         hum_as_uint = (uint16_t)(sensor_value_to_double(&hum) * 10);
 
         uart_transmit_log("Temp/Hum read: Temp=%d, Hum=%d\r\n", temp_as_int, hum_as_uint);
-        updateScreen(temp_as_int/10);
+        updateScreen((int)(sensor_value_to_double(&temp)+0.5)); // add 0.5 for rounding
 
         /* ---------- BLE advertise ---------- */
         ble_advertise(temp_as_int, hum_as_uint);

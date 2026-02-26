@@ -1,2 +1,2 @@
-# gwen-production
-Prodcution code for Gwen, Hardware version 1.3
+# E-luchigna
+Prodcution code for E-luchigna, Hardware version 1.0

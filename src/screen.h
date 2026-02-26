@@ -2,6 +2,14 @@
 #define SCREEN_H
 
 #include <stdint.h>
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/pm/pm.h>
+#include <zephyr/pm/device.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/devicetree.h>
+#include <stdio.h>
+
 
 typedef uint8_t seg7_pattern_t;
 
