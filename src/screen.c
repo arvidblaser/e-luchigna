@@ -6,6 +6,15 @@
 #define TURN_ON_TIME 1500
 #define TURN_OFF_TIME 1500
 
+
+#if DT_NODE_EXISTS(DT_NODELABEL(display_11))
+    // Only run this if the overlay is actually present
+    #define HARDWARE_CONNECTED 1
+#else
+    // Fallback or do nothing for unit tests
+#endif
+
+#if HARDWARE_CONNECTED
 LOG_MODULE_REGISTER(screen_logger, LOG_LEVEL_DBG);
 
 //#define DISPLAY_11 DT_NODELABEL(display_11)
@@ -37,6 +46,7 @@ static const struct gpio_dt_spec display_channels_tens[] = {
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_27), gpios),
 		GPIO_DT_SPEC_GET(DT_NODELABEL(display_28), gpios),
 	};
+#endif
 
 
     // 0b0GFEDCBA
@@ -145,7 +155,7 @@ seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new) {
 //	off_on = ((old_state ^ new_state) & new_state);
 //	on_on = (old_state & new_state);
 //	on_off = ((old_state ^ new_state) & old_state);
-
+#if HARDWARE_CONNECTED
 void updateScreen(int temp){
     uint8_t digit_tens;
     uint8_t digit_units;
@@ -229,4 +239,4 @@ void disconnectPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t fil
          }
     }
 }
-
+#endif
