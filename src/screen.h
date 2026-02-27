@@ -19,7 +19,7 @@ void updateScreen(int value, bool upside_down);
 void initScreenPins();
 
 /* Internal functions */
-seg7_pattern_t get_segment_data(uint8_t nibble);
+seg7_pattern_t get_segment_data(uint8_t nibble, bool upside_down);
 
 void extract_digits(uint8_t number, uint8_t *digit_tens, uint8_t *digit_units);
 
