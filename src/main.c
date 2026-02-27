@@ -16,6 +16,7 @@
 #include <zephyr/drivers/sensor.h>
 #include <stdio.h>
 #include "screen.h"
+#include "button.h"
 
 LOG_MODULE_REGISTER(my_logger, LOG_LEVEL_DBG);
 
@@ -78,6 +79,9 @@ void setup(void)
 
     if (!gpio_is_ready_dt(&temp_on)) LOG_ERR("Temp enable GPIO not ready");
     gpio_pin_configure_dt(&temp_on, GPIO_OUTPUT_ACTIVE);
+
+    initScreenPins();
+    setup_pushbutton();
 
     /* Give SHT4x time to power up */
     k_msleep(50);
@@ -241,7 +245,25 @@ void main(void)
         hum_as_uint = (uint16_t)(sensor_value_to_double(&hum) * 10);
 
         uart_transmit_log("Temp/Hum read: Temp=%d, Hum=%d\r\n", temp_as_int, hum_as_uint);
-        updateScreen((int)(sensor_value_to_double(&temp)+0.5)); // add 0.5 for rounding
+
+        switch (get_current_state())
+        {
+        case SHOW_TEMP:
+            updateScreen((int)(sensor_value_to_double(&temp) + 0.5), false); // add 0.5 for rounding
+            break;
+        case SHOW_TEMP_UPSIDE_DOWN:
+            updateScreen((int)(sensor_value_to_double(&temp) + 0.5), true); // add 0.5 for rounding
+            break;
+        case SHOW_HUM:
+            updateScreen((int)(sensor_value_to_double(&hum) + 0.5), false); // add 0.5 for rounding
+            break;
+        case SHOW_HUM_UPSIDE_DOWN:
+            updateScreen((int)(sensor_value_to_double(&hum) + 0.5), true); // add 0.5 for rounding
+            break;
+        default:
+            updateScreen((int)(sensor_value_to_double(&temp) + 0.5), false); // add 0.5 for rounding
+            break;
+        }
 
         /* ---------- BLE advertise ---------- */
         ble_advertise(temp_as_int, hum_as_uint);

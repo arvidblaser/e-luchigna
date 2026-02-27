@@ -1,7 +1,5 @@
 #include "screen.h"
 
-
-
 #define REFRESH_TIME 100
 #define TURN_ON_TIME 1500
 #define TURN_OFF_TIME 1500
@@ -51,19 +49,19 @@ static const struct gpio_dt_spec display_channels_tens[] = {
 
     // 0b0GFEDCBA
 enum pin_segments {
-    SEGMENT_C = 0b00000100, // C
-    SEGMENT_B = 0b00000010, // B
     SEGMENT_A = 0b00000001, // A
+    SEGMENT_B = 0b00000010, // B
+    SEGMENT_C = 0b00000100, // C
     SEGMENT_D = 0b00001000, // D
+    SEGMENT_E = 0b01000100, // E
     SEGMENT_F = 0b00010000, // F
     SEGMENT_G = 0b00100100, // G
-    SEGMENT_E = 0b01000100, // E
 };
 
 
-// matches order of gpios
+// matches order of gpios EFAD COM BGC
 static const uint8_t segment_map[] = {
-    SEGMENT_C, SEGMENT_B, SEGMENT_A, SEGMENT_D, SEGMENT_F, SEGMENT_G, SEGMENT_E
+    SEGMENT_E, SEGMENT_F,SEGMENT_A, SEGMENT_D, SEGMENT_B, SEGMENT_G, SEGMENT_C
 };
 
 
@@ -87,12 +85,39 @@ enum digit_segments {
     SEG7_OFF   = 0b00000000  // All segments off
 };
 
+enum digit_segments_upside_down {
+    UD_SEG7_ZERO  = 0b00111111, // 0
+    UD_SEG7_ONE   = 0b00110000, // 1
+    UD_SEG7_TWO   = 0b01011011, // 2
+    UD_SEG7_THREE = 0b01111001, // 3
+    UD_SEG7_FOUR  = 0b01110100, // 4
+    UD_SEG7_FIVE  = 0b01101101, // 5
+    UD_SEG7_SIX   = 0b01101111, // 6
+    UD_SEG7_SEVEN = 0b00111000, // 7
+    UD_SEG7_EIGHT = 0b01111111, // 8
+    UD_SEG7_NINE  = 0b01111101, // 9
+    UD_SEG7_A     = 0b01111110, // A
+    UD_SEG7_B     = 0b01100111, // b (lowercase for readability)
+    UD_SEG7_C     = 0b00001111, // C
+    UD_SEG7_D     = 0b01111001, // d (lowercase for readability)
+    UD_SEG7_E     = 0b01001111, // E
+    UD_SEG7_F     = 0b01001110, // F
+    UD_SEG7_OFF      = 0b00000000  // All segments off
+};
+
 
 static const seg7_pattern_t hex_map[] = {
     SEG7_ZERO, SEG7_ONE, SEG7_TWO, SEG7_THREE,
     SEG7_FOUR, SEG7_FIVE, SEG7_SIX, SEG7_SEVEN,
     SEG7_EIGHT, SEG7_NINE, SEG7_A, SEG7_B,
     SEG7_C, SEG7_D, SEG7_E, SEG7_F
+};
+
+static const seg7_pattern_t ud_hex_map[] = {
+    UD_SEG7_ZERO, UD_SEG7_ONE, UD_SEG7_TWO, UD_SEG7_THREE,
+    UD_SEG7_FOUR, UD_SEG7_FIVE, UD_SEG7_SIX, UD_SEG7_SEVEN,
+    UD_SEG7_EIGHT, UD_SEG7_NINE, UD_SEG7_A, UD_SEG7_B,
+    UD_SEG7_C, UD_SEG7_D, UD_SEG7_E, UD_SEG7_F
 };
 
 
@@ -103,9 +128,12 @@ seg7_pattern_t current_units;
 /**
  * @brief Get segment pattern for a hex nibble (0-15)
  */
-seg7_pattern_t get_segment_data(uint8_t nibble) {
+seg7_pattern_t get_segment_data(uint8_t nibble, bool upside_down) {
     if (nibble > 0xF) {
         return SEG7_OFF;
+    }
+    if(upside_down){
+        return ud_hex_map[nibble];
     }
     return hex_map[nibble];
 }
@@ -141,12 +169,12 @@ seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new) {
 }
 
 #if HARDWARE_CONNECTED
-void updateScreen(int temp){
+void updateScreen(int value, bool upside_down){
     uint8_t digit_tens;
     uint8_t digit_units;
-    extract_digits(temp, &digit_tens, &digit_units);
-    seg7_pattern_t display_tens = get_segment_data(digit_tens);
-    seg7_pattern_t display_units = get_segment_data(digit_units);
+    extract_digits(value, &digit_tens, &digit_units);
+    seg7_pattern_t display_tens = get_segment_data(digit_tens,upside_down);
+    seg7_pattern_t display_units = get_segment_data(digit_units,upside_down);
 
     seg7_pattern_t refresh_tens = bitsToRefresh(current_tens, display_tens);
     seg7_pattern_t turn_on_tens = bitsToTurnOn(current_tens, display_tens);

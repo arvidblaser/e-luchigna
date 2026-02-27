@@ -6,4 +6,5 @@ project(gwen-test)
 target_sources(app PRIVATE src/main.c)
 
 target_sources(app PRIVATE src/screen.c)
+target_sources(app PRIVATE src/button.c)
 target_include_directories(app PRIVATE src)

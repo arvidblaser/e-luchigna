@@ -22,11 +22,11 @@
 
 		display_11: display_11{
 			gpios= <&gpio0 21 GPIO_ACTIVE_HIGH>;
-			label= "Display1 1 (C)";
+			label= "Display1 1 (E)";
 		};
 		display_12: display_12{
 			gpios= <&gpio0 20 GPIO_ACTIVE_HIGH>;
-			label= "Display1 2 (B)";
+			label= "Display1 2 (F)";
 		};
 		display_13: display_13{
 			gpios= <&gpio0 19 GPIO_ACTIVE_HIGH>;
@@ -42,7 +42,7 @@
 		};
 		display_16: display_16{
 			gpios= <&gpio0 15 GPIO_ACTIVE_HIGH>;
-			label= "Display1 6 (F)";
+			label= "Display1 6 (B)";
 		};
 		display_17: display_17{
 			gpios= <&gpio0 14 GPIO_ACTIVE_HIGH>;
@@ -50,15 +50,15 @@
 		};
 		display_18: display_18{
 			gpios= <&gpio0 13 GPIO_ACTIVE_HIGH>;
-			label= "Display1 8 (E)";
+			label= "Display1 8 (C)";
 		};
 		display_21: display_21{
 			gpios= <&gpio0 3 GPIO_ACTIVE_HIGH>;
-			label= "Display2 1 (C)";
+			label= "Display2 1 (E)";
 		};
 		display_22: display_22{
 			gpios= <&gpio0 31 GPIO_ACTIVE_HIGH>;
-			label= "Display2 2 (B)";
+			label= "Display2 2 (F)";
 		};
 		display_23: display_23{
 			gpios= <&gpio0 30 GPIO_ACTIVE_HIGH>;
@@ -74,7 +74,7 @@
 		};
 		display_26: display_26{
 			gpios= <&gpio0 27 GPIO_ACTIVE_HIGH>;
-			label= "Display2 6 (F)";
+			label= "Display2 6 (B)";
 		};
 		display_27: display_27{
 			gpios= <&gpio0 26 GPIO_ACTIVE_HIGH>;
@@ -82,7 +82,7 @@
 		};
 		display_28: display_28{
 			gpios= <&gpio0 25 GPIO_ACTIVE_HIGH>;
-			label= "Display2 8 (E)";
+			label= "Display2 8 (C)";
 		};
 
     };

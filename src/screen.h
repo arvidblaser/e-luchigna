@@ -13,6 +13,12 @@
 
 typedef uint8_t seg7_pattern_t;
 
+
+/* Functions to call from main.c */
+void updateScreen(int value, bool upside_down);
+void initScreenPins();
+
+/* Internal functions */
 seg7_pattern_t get_segment_data(uint8_t nibble);
 
 void extract_digits(uint8_t number, uint8_t *digit_tens, uint8_t *digit_units);
@@ -20,8 +26,6 @@ void extract_digits(uint8_t number, uint8_t *digit_tens, uint8_t *digit_units);
 seg7_pattern_t bitsToRefresh(seg7_pattern_t current, seg7_pattern_t new);
 seg7_pattern_t bitsToTurnOn(seg7_pattern_t current, seg7_pattern_t new);
 seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new);
-
-void updateScreen(int temp);
 
 void refreshPins(const struct gpio_dt_spec *hardware_pins, seg7_pattern_t refresh_pins);
 void turnOffPins(const struct gpio_dt_spec  *hardware_pins, seg7_pattern_t turn_off_pins);
