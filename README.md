@@ -14,7 +14,7 @@ To do so follow this guide for installing zephyr: https://forums.raspberrypi.com
 
 in the step making a manifest i used hal_nordic instead of the examples (might not matter).
 
-With the venv activated in the zephyr_dev dir the test are built and run with
+With the venv activated (. .venv/bin/activate) in the zephyr_dev dir the test are built and run with
 ````
 # first time
 west build -p always -b native_sim/native/64 -d build/tests ../git/e-luchigna/tests/screen -t run

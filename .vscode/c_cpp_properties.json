@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\ncs\\v2.6.1\\zephyr\\include"
+                "C:\\ncs\\v2.6.1\\zephyr\\include",
+                "C:/ncs/toolchains/cf2149caf2/opt/zephyr-sdk/arm-zephyr-eabi/arm-zephyr-eabi/include"
             ],
             "defines": [
                 "_DEBUG",

@@ -1,4 +1,5 @@
 #include "screen.h"
+#include "utils.h"
 
 #define REFRESH_TIME 100
 #define TURN_ON_TIME 1500
@@ -170,6 +171,7 @@ seg7_pattern_t bitsToTurnOff(seg7_pattern_t current, seg7_pattern_t new) {
 
 #if HARDWARE_CONNECTED
 void updateScreen(int value, bool upside_down){
+    LOG_INF("Entering Update sccren");
     uint8_t digit_tens;
     uint8_t digit_units;
     extract_digits(value, &digit_tens, &digit_units);
@@ -184,29 +186,35 @@ void updateScreen(int value, bool upside_down){
     seg7_pattern_t turn_on_units = bitsToTurnOn(current_units, display_units);
     seg7_pattern_t turn_off_units = bitsToTurnOff(current_units, display_units);
 
-
+    LOG_INF("Starting turning off pins");
     turnOffPins(display_channels_tens, turn_off_tens);
     turnOffPins(display_channels_units, turn_off_units);
 
+    LOG_INF("Starting turning on pins");
     turnOnPins(display_channels_tens, turn_on_tens);
     turnOnPins(display_channels_units, turn_on_units);
-    k_msleep(TURN_ON_TIME);
+    sleep_mcu(TURN_ON_TIME);
     disconnectPins(display_channels_tens,turn_on_tens);
     disconnectPins(display_channels_units,turn_on_units);
+    LOG_INF("Finished turning on pins");
+
      //Turning off takes some additional time than turning on. Working with timers/interrupts might be better solution
-    k_msleep(TURN_OFF_TIME);
+    sleep_mcu(TURN_OFF_TIME);
     disconnectPins(display_channels_tens,turn_off_tens);
     disconnectPins(display_channels_units,turn_off_units);
-    
+    LOG_INF("Finished turning off pins");
 
+    LOG_INF("Starting refreshing pins");
     refreshPins(display_channels_tens, refresh_tens);
     refreshPins(display_channels_units, refresh_units);
-    k_msleep(REFRESH_TIME);
+    sleep_mcu(REFRESH_TIME);
     disconnectPins(display_channels_tens,refresh_tens);
     disconnectPins(display_channels_units,refresh_units);
+    LOG_INF("Finished refreshing pins");
 
     current_units = display_units;
     current_tens = display_tens;
+    LOG_INF("Exiting Update sccren");
 
 }
 

@@ -17,13 +17,9 @@
 #include <stdio.h>
 #include "screen.h"
 #include "button.h"
+#include "utils.h"
 
 LOG_MODULE_REGISTER(my_logger, LOG_LEVEL_DBG);
-
-/* Console for low-power suspend/resume */
-#if CONFIG_SERIAL
-static const struct device *cons = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
-#endif
 
 /* UART device for logging transmitted values */
 static const struct device *uart_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
@@ -66,7 +62,6 @@ static const struct bt_data sd[] = { BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME,
 /* Function prototypes */
 static void bt_ready(int err);
 static void ble_advertise(int16_t temp, uint16_t hum);
-static int sleep_mcu(int32_t ms);
 static int read_adc_mv(uint16_t *vcap_mv);
 static void uart_transmit_log(const char *fmt, ...);
 
@@ -104,18 +99,7 @@ void setup(void)
     if (err) LOG_ERR("Bluetooth init failed (%d)", err);
 }
 
-/* ---------------- Sleep ---------------- */
-int sleep_mcu(int32_t ms)
-{
-#if CONFIG_SERIAL
-    pm_device_action_run(cons, PM_DEVICE_ACTION_SUSPEND);
-#endif
-    k_msleep(ms);
-#if CONFIG_SERIAL
-    pm_device_action_run(cons, PM_DEVICE_ACTION_RESUME);
-#endif
-    return 0;
-}
+
 
 /* ---------------- ADC ---------------- */
 int read_adc_mv(uint16_t *vcap_mv)
